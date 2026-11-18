@@ -203,7 +203,7 @@ def render(folder, run, task, observed, differences, analyses, ai_summary):
             lines.append(f"- **{md(job['company'])} \u00b7 {md(job['title'])}**"
                          f"\uff08{md(why)}\uff1a{md(reason)}\uff1b{md(job['status'])}\uff09")
             if recovered:
-                lines.append(f"  - AI 辅助解析字段\uff1a{md('\u3001'.join(recovered))}")
+                lines.append(f"  - AI 辅助解析字段\uff1a{md(chr(0x3001).join(recovered))}")
             if job["url"]:
                 lines.append(f"  - <{job['url'].replace('<', '%3C').replace('>', '%3E')}>")
             if analysis and (verdict != "unrelated" or task["mode"] == "company"):
