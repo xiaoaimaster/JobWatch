@@ -1,0 +1,4 @@
+[
+  {"id":"C1","title":"后端开发实习生","type":"实习","location":"杭州","duties":"维护库存服务，熟悉 Java。"},
+  {"id":"C2","title":"应用开发实习生","type":"实习","location":"杭州","url":"https:\/\/cloud.example.invalid\/jobs\/C2","duties":"部署 Agent 工作流，维护 RAG 服务。","requirements":"熟悉 SQL。"}
+]
