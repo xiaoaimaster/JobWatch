@@ -1,0 +1,38 @@
+{
+  "output": "../output",
+  "registry": "sources.example.json",
+  "tasks": {
+    "one-company": {
+      "mode": "company",
+      "sources": ["example-json"],
+      "cities": ["上海"],
+      "types": ["实习"],
+      "pinned_urls": []
+    },
+    "ai-apps": {
+      "mode": "role",
+      "sources": "all",
+      "direction": "AI 应用开发实习",
+      "search": {"fresh_hours": 24, "max_refresh": 5, "priority_sources": ["example-json"]},
+      "keywords": ["AI 应用开发", "大模型应用开发", "Agent 开发"],
+      "candidate_keywords": ["LLM 应用", "大模型应用", "AI应用", "AIGC"],
+      "body_candidate_rules": [
+        {"terms": ["Agent", "智能体"], "context": ["开发", "集成", "搭建", "工作流建设", "工作流设计", "设计工作流", "构建工作流"]}
+      ],
+      "cities": [],
+      "types": ["实习"]
+    }
+  },
+  "ai": {
+    "provider": "openai",
+    "base_url": "https://api.openai.com/v1",
+    "model": "替换为账户支持结构化输出的模型ID",
+    "api_key_env": "OPENAI_API_KEY",
+    "batch_size": 8,
+    "max_requests": 20,
+    "max_input_chars": 24000,
+    "max_output_tokens": 3500,
+    "recover_fields": false,
+    "max_recovery_requests": 4
+  }
+}
