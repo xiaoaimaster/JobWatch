@@ -1,0 +1,15 @@
+{
+  "output": "output",
+  "registry": "registry.json",
+  "tasks": {
+    "ai-apps": {
+      "mode": "role",
+      "sources": ["studio", "cloud"],
+      "direction": "AI 应用开发实习",
+      "keywords": ["AI 应用开发", "大模型应用开发", "Agent 开发"],
+      "candidate_keywords": ["应用开发", "后端开发"],
+      "types": ["实习"]
+    },
+    "studio-watch": {"mode":"company","sources":["studio"]}
+  }
+}
