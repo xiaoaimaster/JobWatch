@@ -1,0 +1,6 @@
+[
+  {"id":"S1","title":"AI 应用开发实习生","type":"实习","location":"上海","url":"https:\/\/studio.example.invalid\/jobs\/S1","duties":"维护内部知识库工具。","requirements":"熟悉 Python。"},
+  {"id":"S1","title":"AI 应用开发实习生","type":"实习","location":"上海","url":"https:\/\/studio.example.invalid\/jobs\/S1","duties":"维护内部知识库工具。","requirements":"熟悉 Python。"},
+  {"id":"S2","title":"大模型应用开发实习生","type":"实习","location":"上海","url":"https:\/\/studio.example.invalid\/jobs\/S2","duties":"接入大模型 API。"},
+  {"id":"S3","title":"游戏客户端实习生","type":"实习","location":"上海","duties":"维护客户端界面。"}
+]
