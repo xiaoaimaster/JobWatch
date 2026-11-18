@@ -1,0 +1,33 @@
+[
+  {
+    "id": "example-json",
+    "company": "示例企业甲",
+    "adapter": "json_http",
+    "careers_url": "https://jobs.example.invalid/",
+    "url": "https://jobs.example.invalid/api/jobs",
+    "access_reviewed": false,
+    "interval_seconds": 2,
+    "max_pages": 20,
+    "items_path": "data.items",
+    "total_path": "data.total",
+    "pagination": {"page_param":"page", "start":1, "size_param":"limit", "page_size":20},
+    "fields": {"id":"jobId", "title":"title", "location":"city", "type":"type", "url":"detailUrl", "description":"description"}
+  },
+  {
+    "id": "example-html",
+    "company": "示例企业乙",
+    "adapter": "html_http",
+    "careers_url": "https://careers.example.invalid/",
+    "url": "https://careers.example.invalid/jobs",
+    "access_reviewed": false,
+    "interval_seconds": 2,
+    "max_pages": 10,
+    "items_xpath": "//article[@data-job-id]",
+    "empty_xpath": "//*[@id='no-jobs']",
+    "next_xpath": "//a[@rel='next']/@href",
+    "fields": {"id":"./@data-job-id", "title":"./h2", "url":"./a/@href", "type":".//span[@class='type']", "location":".//span[@class='city']"},
+    "detail_fields": {"duties":"//*[@id='duties']", "requirements":"//*[@id='requirements']", "bonus":"//*[@id='bonus']"},
+    "detail_recovery_xpath": "//*[@id='job-description']",
+    "recoverable_fields": ["title", "duties", "requirements"]
+  }
+]
