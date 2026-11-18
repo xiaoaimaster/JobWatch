@@ -1,0 +1,19 @@
+{
+  "output": "../output/offline-example",
+  "registry": "sources.offline.json",
+  "tasks": {
+    "one-company": {
+      "mode": "company",
+      "sources": ["studio"]
+    },
+    "ai-apps": {
+      "mode": "role",
+      "sources": "all",
+      "direction": "AI 应用开发实习",
+      "search": {"fresh_hours": 24, "max_refresh": 5, "priority_sources": ["studio"]},
+      "keywords": ["AI 应用开发", "大模型应用开发", "Agent 开发"],
+      "candidate_keywords": ["后端开发"],
+      "types": ["实习"]
+    }
+  }
+}
