@@ -1,0 +1,4 @@
+[
+  {"id":"studio","company":"示例星河工作室","adapter":"json_file","path":"studio.json"},
+  {"id":"cloud","company":"示例云原科技","adapter":"json_file","path":"cloud.json"}
+]
