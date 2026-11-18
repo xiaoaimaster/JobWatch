@@ -26,7 +26,7 @@ class CareersHandler(BaseHTTPRequestHandler):
             body = "User-agent: *\nDisallow: /blocked\n"
         elif self.path in ("/careers", "/page-two"):
             number = 1 if self.path == "/careers" else 2
-            body = f"""<article itemscope itemtype="https:" "//schema" ".org/JobPosting">
+            body = f"""<article itemscope itemtype="https:{'//'}schema.org/JobPosting">
               <a itemprop="url" href="/jobs/{number}"><h2 itemprop="title">Agent 开发 {number}</h2></a>
               <p itemprop="description">岗位职责\uff1a开发工作流</p>
             </article>"""
