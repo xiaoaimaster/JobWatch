@@ -1,0 +1,14 @@
+[
+  {
+    "id": "studio",
+    "company": "示例星河工作室",
+    "adapter": "json_file",
+    "path": "../src/jobwatch/demo_data/studio-1.json"
+  },
+  {
+    "id": "cloud",
+    "company": "示例云原科技",
+    "adapter": "json_file",
+    "path": "../src/jobwatch/demo_data/cloud-1.json"
+  }
+]
