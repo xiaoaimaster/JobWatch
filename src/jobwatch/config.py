@@ -61,7 +61,7 @@ def job_path_template(value, allow_query=False):
             and "?" not in query and "#" not in query
             and "={id}" in query and value.count("{id}") == 1
             and not {".", ".."}.intersection(path.split("/")))
-return (isinstance(value, str) and value.startswith("/") and not value.startswith("//")
+    return (isinstance(value, str) and value.startswith("/") and not value.startswith("//")
         and value.split("/").count("{id}") == 1
         and not re.search(r"[{}?#\\%\s]", value.replace("{id}", "", 1))
         and not {".", ".."}.intersection(value.split("/")))
