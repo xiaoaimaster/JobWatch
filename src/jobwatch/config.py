@@ -54,12 +54,20 @@ def validate_fields(fields, xpath=False):
             etree.XPath(expression)
 
 
-def job_path_template(value):
-    return (isinstance(value, str) and value.startswith("/") and not value.startswith("//")
-            and value.split("/").count("{id}") == 1
-            and not re.search(r"[{}?#\\%\s]", value.replace("{id}", "", 1))
-            and not {".", ".."}.intersection(value.split("/")))
-
+def job_path_template(value, allow_query=False):
+  if not isinstance(value, str) or not value.startswith("/") or value.startswith("//"):
+    return False
+    path, sep, query = value.partition("?")
+    if sep and not allow_query:
+      return False
+      if {".", ".."}.intersection(path.split("/")):
+        return False
+      if re.search(r"[{}#\\%\s]", value.replace("{id}", "", 1)):
+        return False
+      if sep:
+        return (value.count("{id}") == 1 and "?" not in query
+                and (path.split("/").count("{id}") == 1 or f"={chr(123)}id{chr(125)}" in query))
+    return path.split("/").count("{id}") == 1
 
 def validate_source(source, parent):
     require(isinstance(source, dict), "来源须为对象")
@@ -103,7 +111,7 @@ def validate_source(source, parent):
             require(integer(browser["operation_timeout_seconds"], 2, 300),
                     f"{sid} 浏览器操作硬超时须在 2\u2013300 秒")
         posts = browser.get("read_post_paths", [])
-        require(strings(posts) and all(re.fullmatch(r"/[A-Za-z0-9/_-]+", route) for route in posts),
+        require(strings(posts) and all(re.fullmatch(r"/[A-Za-z0-9/_.-]+", route) for route in posts),
                 f"{sid} read_post_paths 须为已核实的同源只读请求路径")
         buttons = browser.get("pagination")
         if "pagination" in browser:
@@ -154,7 +162,7 @@ def validate_source(source, parent):
                 f"{sid} detail_url_template 须为包含独立 {{id}} 路径段的站内绝对路径，并配置 id 和 detail_fields")
     if "job_url_template" in source:
         require(kind == "json_http" and "id" in fields and "url" not in fields
-                and job_path_template(source["job_url_template"]),
+                and job_path_template(source["job_url_template"], allow_query=True),
                 f"{sid} job_url_template 须使用岗位 id 生成同源路径，且不能并用 url 字段映射")
     if "query_form" in source:
         form = source["query_form"]
