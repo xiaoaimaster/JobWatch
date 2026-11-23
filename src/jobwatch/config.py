@@ -62,7 +62,7 @@ def job_path_template(value, allow_query=False):
       return False
       if {".", ".."}.intersection(path.split("/")):
         return False
-      if re.search(r"[{}#\\%\s]", value.replace("{id}", "", 1)):
+      if any(ch in "{}#\\% \t\r\n" for ch in value.replace("{id}", "", 1)):    
         return False
       if sep:
         return (value.count("{id}") == 1 and "?" not in query
