@@ -4,7 +4,7 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
-from urllib.request import Request, build_opener
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 from urllib.robotparser import RobotFileParser
 from datetime import datetime, timezone
 import json
@@ -100,12 +100,21 @@ def origin(url):
     return parts.scheme, parts.hostname, parts.port or (443 if parts.scheme == "https" else 80)
 
 
+class SameOriginRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        try:
+            target = web_url(newurl, req.full_url)
+        except ValueError:
+            return None
+        if origin(target) != origin(req.full_url):
+            return None
+        return super().redirect_request(req, fp, code, msg, headers, target)
 class WebSource:
     def __init__(self, source):
         self.base = source["url"]
         self.interval = source.get("interval_seconds", 2)
         self.next_request = 0.0
-        self.opener = build_opener(NoRedirect())
+        self.opener = build_opener(SameOriginRedirect())
         self.robots = None
 
     def check_access(self, url, folder):
