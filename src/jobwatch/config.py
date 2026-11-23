@@ -55,13 +55,9 @@ def validate_fields(fields, xpath=False):
 
 
 def job_path_template(value, allow_query=False):
-   if not isinstance(value, str) or not value.startswith("/") or value.startswith("//"):
-       return False
-   if allow_query and "?" in value:
-        return value.count("?") == 1 and "#" not in value and "={id}" in value.partition("?")[2] and value.count("{id}") == 1 and not {".", ".."}.intersection(value.partition("?")[0].split("/"))
-   if value.split("/").count("{id}") != 1 or {".", ".."}.intersection(value.split("/")):
-        return False
-    return not any(ch in "{}?#%" or ch == chr(92) or ch.isspace() for ch in value.replace("{id}", "", 1))
+    if allow_query and isinstance(value, str) and "?" in value:
+        return value.startswith("/") and not value.startswith("//") and value.count("?") == 1 and "#" not in value and "={id}" in value.partition("?")[2] and value.count("{id}") == 1 and not {".", ".."}.intersection(value.partition("?")[0].split("/"))
+    return isinstance(value, str) and value.startswith("/") and not value.startswith("//") and value.split("/").count("{id}") == 1 and not any(ch in "{}?#%" or ch == chr(92) or ch.isspace() for ch in value.replace("{id}", "", 1)) and not {".", ".."}.intersection(value.split("/"))
 
 def validate_source(source, parent):
     require(isinstance(source, dict), "来源须为对象")
