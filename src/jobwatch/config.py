@@ -61,7 +61,7 @@ def job_path_template(value, allow_query=False):
         return value.count("?") == 1 and "#" not in value and "={id}" in value.partition("?")[2] and value.count("{id}") == 1 and not {".", ".."}.intersection(value.partition("?")[0].split("/"))
    if value.split("/").count("{id}") != 1 or {".", ".."}.intersection(value.split("/")):
         return False
-     return not any(ch in "{}?#%" or ch == chr(92) or ch.isspace() for ch in value.replace("{id}", "", 1))
+    return not any(ch in "{}?#%" or ch == chr(92) or ch.isspace() for ch in value.replace("{id}", "", 1))
 
 def validate_source(source, parent):
     require(isinstance(source, dict), "来源须为对象")
