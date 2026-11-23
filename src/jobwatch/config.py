@@ -59,7 +59,7 @@ def job_path_template(value, allow_query=False):
        return False
    if allow_query and "?" in value:
        path, _, query = value.partition("?")
-         return "?" not in query and "#" not in query and "={id}" in query and value.count("{id}") == 1 and not {".", ".."}.intersection(path.split("/"))
+        return "?" not in query and "#" not in query and "={id}" in query and value.count("{id}") == 1 and not {".", ".."}.intersection(path.split("/"))
     if value.split("/").count("{id}") != 1 or {".", ".."}.intersection(value.split("/")):
         return False
    rest = value.replace("{id}", "", 1)
