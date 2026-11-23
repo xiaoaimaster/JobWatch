@@ -58,16 +58,12 @@ def job_path_template(value, allow_query=False):
   if not isinstance(value, str) or not value.startswith("/") or value.startswith("//"):
     return False
     path, sep, query = value.partition("?")
-    if sep and not allow_query:
-      return False
-      if {".", ".."}.intersection(path.split("/")):
-        return False
-      if any(ch in "{}#\\% \t\r\n" for ch in value.replace("{id}", "", 1)):    
-        return False
-      if sep:
-        return (value.count("{id}") == 1 and "?" not in query
-                and (path.split("/").count("{id}") == 1 or f"={chr(123)}id{chr(125)}" in query))
-    return path.split("/").count("{id}") == 1
+    return (not (sep and not allow_query)
+            and value.count("{id}") == 1
+            and "?" not in query
+            and not any(ch in "{}#\\% \t\r\n" for ch in value.replace("{id}", "", 1))
+            and not {".", ".."}.intersection(path.split("/"))
+            and (path.split("/").count("{id}") == 1 or (bool(sep) and "={id}" in query)))
 
 def validate_source(source, parent):
     require(isinstance(source, dict), "来源须为对象")
