@@ -97,6 +97,15 @@ def unix_descendants(pid):
         pending.extend(children.get(child, []))
     return descendants
 
+def retry_io(operation, attempts=8, delay=0.03):
+    for attempt in range(attempts):
+        try:
+            return operation()
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(delay)
+
 
 class IsolatedBrowser:
     def __init__(self, source, output):
@@ -124,6 +133,11 @@ class IsolatedBrowser:
         if process is None:
             return ""
         problem = ""
+        if not interrupted:
+            try:
+                process.wait(timeout=2)
+            except (OSError, subprocess.TimeoutExpired):
+                pass
         try:
             if self.release_job:
                 release, self.release_job = self.release_job, None
@@ -145,9 +159,14 @@ class IsolatedBrowser:
                     except ProcessLookupError:
                         pass
             elif process.poll() is None:
-                subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], timeout=4,
-                               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                               creationflags=subprocess.CREATE_NO_WINDOW, check=True)
+                kill = subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], timeout=4,
+                                      stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                      creationflags=subprocess.CREATE_NO_WINDOW)
+                if kill.returncode != 0 and process.poll() is None:
+                    try:
+                        process.wait(timeout=1)
+                    except (OSError, subprocess.TimeoutExpired):
+                        problem = "浏览器子进程树清理未确认"
         except ProcessLookupError:
             pass
         except (OSError, subprocess.SubprocessError):
@@ -181,13 +200,19 @@ class IsolatedBrowser:
         if self.process is None:
             self.start()
         phase_path = self.directory / "phase.json"
-        phase_path.unlink(missing_ok=True)
-        write_json(self.directory / "request.json", request)
+        retry_io(lambda: phase_path.unlink(missing_ok=True))
+        retry_io(lambda: write_json(self.directory / "request.json", request))
         reply_path = self.directory / "reply.json"
         while time.monotonic() < deadline:
             if reply_path.is_file():
-                reply = read_json(reply_path)
-                reply_path.unlink()
+                try:
+                    reply = retry_io(lambda: read_json(reply_path))
+                except PermissionError:
+                    if time.monotonic() < deadline:
+                        time.sleep(0.05)
+                        continue
+                    raise
+                retry_io(lambda: reply_path.unlink(missing_ok=True))
                 if "error" in reply:
                     raise ValueError(reply["error"])
                 return reply.get("value")
@@ -226,15 +251,15 @@ def worker(directory):
 
     source = read_json(directory / "source.json")
     browser = BrowserPages(source)
-    browser.progress = lambda phase: write_json(directory / "phase.json", {"phase": phase})
+    browser.progress = lambda phase: retry_io(lambda: write_json(directory / "phase.json", {"phase": phase}))
     site = WebSource(source)
     next_request = directory / "request.json"
     while True:
         if not next_request.is_file():
             time.sleep(0.05)
             continue
-        request = read_json(next_request)
-        next_request.unlink()
+        request = retry_io(lambda: read_json(next_request))
+        retry_io(lambda: next_request.unlink(missing_ok=True))
         action = request["operation"]
         try:
             if action == "get":
@@ -249,7 +274,7 @@ def worker(directory):
             reply = {}
         except (OSError, ValueError) as error:
             reply = {"error": str(error)}
-        write_json(directory / "reply.json", reply)
+        retry_io(lambda: write_json(directory / "reply.json", reply))
         if action == "close":
             return
 
